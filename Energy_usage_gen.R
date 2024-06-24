@@ -102,7 +102,18 @@ df_tsla_nem$diff <- df_tsla_nem$usage_value - df_tsla_nem$tsla_from_grid
 df_tsla_nem <- subset(df_tsla_nem, select = -month_year_tsla  )
 df_tsla_nem
 
-
-
-
 ########################
+#plot 
+#tsla plot
+start_date <- as.Date("2024-03-01")
+finish_date <- as.Date("2024-05-31")
+
+
+df_NEM_supply_300_c_fil <- df_NEM_supply_300_c %>% filter(Date >= start_date & Date <= finish_date)
+ggplot(tsla, aes(x = Date.time, y= From.Grid..kWh.)) + geom_line() + labs(x="Date", y="kWh") + ggtitle("tsla_from_grid")
+ggplot(df_NEM_supply_300_c_fil,aes(x=Date, y=row_sum)) + geom_line() + labs(x="Date", y="kWh") + ggtitle("NEM_Supply")
+
+ggplot()+
+  geom_line(data = tsla, aes(x = Date.time, y= From.Grid..kWh., color = "tsla")) +
+  geom_line(data = df_NEM_supply_300_c_fil, aes(x = Date, y= row_sum, color = "NEM"))+
+  labs(x = "Date", y = "kWh")
