@@ -65,21 +65,19 @@ tsla <- bind_rows(tsla_March,tsla_April,tsla_May)
 #clean up tsla
 
 
-
-
-
-
-
-
-
+tsla$Date.time <- as.Date(tsla$Date.time)
 
 tsla_summary <- tsla %>% 
-  mutate(month = floor_date(Date.time)) %>% 
+  mutate(month = floor_date(Date.time,"month")) %>% 
   group_by(month) %>% 
   summarise(
-    tsla_app_usage = sum(From.Grid..kWh., na.rm = TRUE)
+    tsla_from_grid = sum(From.Grid..kWh.,na.rm= TRUE)
   )
 
+tsla_summary <- tsla_summary %>% 
+  mutate(month_year_tsla = format(month, "%b%y"))
+print(tsla_summary)
+tsla_summary$tsla_from_grid <- tsla_summary$tsla_from_grid 
 
 
 ### monthly summary for usage partk
@@ -95,6 +93,16 @@ monthly_summary <- monthly_summary %>%
   mutate(month_year = format(month, "%b%y"))
 print(monthly_summary)
 # put in from March 24 o May 24
-df_NEM_invetigation <- monthly_summary %>% filter(month_year %in% c("Mar23","Apr24","May24"))
+df_NEM_invetigation <- monthly_summary %>% filter(month_year %in% c("Mar24","Apr24","May24"))
+df_NEM_invetigation$usage_value <- df_NEM_invetigation$usage_value
 
-                                                  
+
+df_tsla_nem <- left_join(df_NEM_invetigation, tsla_summary)
+df_tsla_nem$diff <- df_tsla_nem$usage_value - df_tsla_nem$tsla_from_grid                                           
+df_tsla_nem <- subset(df_tsla_nem, select = -month_year_tsla  )
+df_tsla_nem
+
+
+
+
+########################
