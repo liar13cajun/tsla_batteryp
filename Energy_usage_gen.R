@@ -100,7 +100,7 @@ df_NEM_invetigation$usage_value <- df_NEM_invetigation$usage_value
 df_tsla_nem <- left_join(df_NEM_invetigation, tsla_summary)
 df_tsla_nem$diff <- df_tsla_nem$usage_value - df_tsla_nem$tsla_from_grid                                           
 df_tsla_nem <- subset(df_tsla_nem, select = -month_year_tsla  )
-df_tsla_nem
+print(df_tsla_nem)
 
 ########################
 #plot 
