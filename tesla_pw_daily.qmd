@@ -1,0 +1,34 @@
+---
+title: "Energy_usage_day"
+format: html
+editor: visual
+---
+
+## TESLA POWERWALL 
+
+Energy usage in a day
+
+## Running Code
+
+library set up
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(writexl)
+library(ggplot2)
+library(openxlsx)
+library(dplyr)
+library(sf)
+library(janitor)
+library(data.table)
+library(lubridate)
+```
+
+input files
+
+```{r}
+
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
