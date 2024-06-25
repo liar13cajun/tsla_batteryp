@@ -50,7 +50,6 @@ f_row_sum <- filtered_df$row_sum
 print("Filtered Data Frame (specific date):")
 print(f_row_sum)
 ########################################################################################
-
 #consider usage part
 ##investigate 10/6
 #investigate 13/6
@@ -59,10 +58,61 @@ print(f_row_sum)
 tsla_240610 <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/20240610_tsla.csv",encoding ="UTF-8")
 tsla_240613 <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/20240613_tsla.csv",encoding ="UTF-8")
 
+tsla_240610 <- rownames_to_column(tsla_240610)
+tsla_240613 <- rownames_to_column(tsla_240613)
+
+colnames(tsla_240610)[1] <- "ID"
+colnames(tsla_240613)[1] <- "ID"
+
+tsla_240610$Home..kW.<-tsla_240610$Home..kW./10
+tsla_240610$Powerwall..kW.<-tsla_240610$Powerwall..kW./10
+tsla_240610$Solar..kW.<- tsla_240610$Solar..kW./10
+tsla_240610$Grid..kW.<- tsla_240610$Grid..kW./10
+
+tsla_240613$Home..kW.<-tsla_240613$Home..kW./10
+tsla_240613$Powerwall..kW.<-tsla_240613$Powerwall..kW./10
+tsla_240613$Solar..kW.<- tsla_240613$Solar..kW./10
+tsla_240613$Grid..kW.<- tsla_240613$Grid..kW./10
 ########################################################################################
 #clean up tsla
+#PICK THE SINGLE DAY
+
+specific_date <- as.Date("2024-06-10")
+specified_df <- df_NEM_supply_300_c %>% filter(Date == specific_date)
+#subset
+specified_df_x <- specified_df[,3:ncol(specified_df)] #remove first to row
+specified_df_x_t <- t(specified_df_x) # transpose
+specified_df_x_t <- specified_df_x_t[-nrow(specified_df_x_t),] # remove row sum
+df_xx <- as.data.frame(specified_df_x_t) # back to dataframe
+
+df_xx <- rownames_to_column(df_xx)
+colnames(df_xx)[1] <- "time_xxxx"
+df_xx <- rownames_to_column(df_xx)
+colnames(df_xx)[1] <- "ID"
+##########################################################
+
+df_join <- merge(tsla_240610,df_xx)
+df_join$ID <- as.numeric(df_join$ID)
+df_join <- df_join[order(df_join$ID, decreasing = FALSE),]
 
 
 
+####################################################
 
+
+# Extract text between 'T' and '+'
+df_join$extracted_time <- str_extract(df_join$Date.time, "(?<=T).*?(?=\\+)")
+# df_join$extracted_time <- as_datetime(df_join$extracted_time) 
+df_join$Date.time <- as_datetime(df_join$Date.time) 
+
+df_join$local_time <- with_tz(df_join$Date.time, tz = "Australia/Adelaide")
+# Convert UTC to Adelaide time (ACST)
+# datetime_adelaide <- with_tz(datetime_utc, tz = "Australia/Adelaide")
+
+str(df_join)
+#####################################################
+ggplot()+
+  geom_line(data = df_join, aes(x = local_time      , y= Grid..kW., color = "tsla")) +
+  geom_line(data = df_join, aes(x = local_time      , y= specified_df_x_t, color = "NEM"))+
+  labs(x = "time", y = "kWh")
 
