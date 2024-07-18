@@ -44,7 +44,7 @@ row_sums <- rowSums(df_NEM_supply_300_c[, 3:ncol(df_NEM_supply_300_c)], na.rm = 
 df_NEM_supply_300_c$row_sum <- row_sums
 ####################################################################################
 #Check NEM supply usage 
-specific_date <- as.Date("2024-07-13")
+specific_date <- as.Date("2024-07-17")
 filtered_df <- df_NEM_supply_300_c %>% filter(Date == specific_date)
 f_row_sum <- filtered_df$row_sum
 print("Filtered Data Frame (specific date):")
@@ -55,32 +55,19 @@ print(f_row_sum)
 #investigate 13/6
 
 #home
-tsla_240716 <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/20240716_tsla.csv",encoding ="UTF-8")
 tsla_240717 <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/20240717_tsla.csv",encoding ="UTF-8")
-tsla_240713 <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/20240713_tsla.csv",encoding ="UTF-8")
 
-tsla_240716 <- rownames_to_column(tsla_240716)
+
 tsla_240717 <- rownames_to_column(tsla_240717)
-tsla_240713 <- rownames_to_column(tsla_240713)
 
-colnames(tsla_240716)[1] <- "ID"
 colnames(tsla_240717)[1] <- "ID"
-colnames(tsla_240713)[1] <- "ID"
-
-tsla_240716$Home..kW.<-tsla_240716$Home..kW./10
-tsla_240716$Powerwall..kW.<-tsla_240716$Powerwall..kW./10
-tsla_240716$Solar..kW.<- tsla_240716$Solar..kW./10
-tsla_240716$Grid..kW.<- tsla_240716$Grid..kW./10
 
 tsla_240717$Home..kW.<-tsla_240717$Home..kW./10
 tsla_240717$Powerwall..kW.<-tsla_240717$Powerwall..kW./10
 tsla_240717$Solar..kW.<- tsla_240717$Solar..kW./10
 tsla_240717$Grid..kW.<- tsla_240717$Grid..kW./10
 
-tsla_240713$Home..kW.<-tsla_240713$Home..kW./10
-tsla_240713$Powerwall..kW.<-tsla_240713$Powerwall..kW./10
-tsla_240713$Solar..kW.<- tsla_240713$Solar..kW./10
-tsla_240713$Grid..kW.<- tsla_240713$Grid..kW./10
+
 ########################################################################################
 #clean up tsla
 #PICK THE SINGLE DAY
@@ -101,7 +88,7 @@ colnames(df_xx)[1] <- "ID"
 
 
 ### change here
-df_join <- merge(tsla_240713,df_xx)
+df_join <- merge(tsla_240717,df_xx)
 df_join$ID <- as.numeric(df_join$ID)
 df_join <- df_join[order(df_join$ID, decreasing = FALSE),]
 
@@ -124,5 +111,16 @@ str(df_join)
 ggplot()+
   geom_line(data = df_join, aes(x = local_time      , y= Grid..kW., color = "tsla")) +
   geom_line(data = df_join, aes(x = local_time      , y= specified_df_x_t, color = "NEM"))+
-  labs(x = "time", y = "kWh")
+  labs(x = "time", y = "kWh", title = "2024-07-17")
+#######################################################
+#tsla home
+tsla_home <- sum(tsla_240717$Home..kW.)
+tsla_powerwall <- sum(tsla_240717$Powerwall..kW.)
+tsla_solar <- sum(tsla_240717$Solar..kW.)
+tsla_grid <- sum(tsla_240717$Grid..kW.)
 
+
+#############
+#difference between grid
+
+print(f_row_sum - tsla_grid)
