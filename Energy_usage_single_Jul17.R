@@ -120,7 +120,9 @@ tsla_solar <- sum(tsla_240717$Solar..kW.)
 tsla_grid <- sum(tsla_240717$Grid..kW.)
 
 
+
 #############
 #difference between grid
-
+print(tsla_grid)
 print(f_row_sum - tsla_grid)
+print(f_row_sum)
