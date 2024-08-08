@@ -21,10 +21,10 @@ library(lubridate)
 # tsla_March <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/March_2024.csv",encoding ="UTF-8")
 # tsla_April <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/April_2024.csv",encoding ="UTF-8")
 # tsla_May <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/May_2024.csv",encoding ="UTF-8")
-tsla_June <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/June_2024.csv",encoding ="UTF-8")
+tsla_July <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/July_2024.csv",encoding ="UTF-8")
 # tsla_May <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/July_2024.csv",encoding ="UTF-8")
 
-tsla <- tsla_June
+tsla <- tsla_July
 ########################################################################################
 #clean up tsla
 
@@ -37,7 +37,7 @@ tsla_summary <- tsla %>%
   summarise(
     tsla_from_grid = sum(From.Grid..kWh.,na.rm= TRUE)
   )
-tsla_June_clean <- tsla
+tsla_July_clean <- tsla
 tsla_summary <- tsla_summary %>% 
   mutate(month_year_tsla = format(month, "%b%y"))
 print(tsla_summary)
@@ -51,12 +51,12 @@ tsla_summary$tsla_from_grid <- tsla_summary$tsla_from_grid
 
 ######################
 
-EA_June <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/EA-jun-2024-usage.csv",encoding ="UTF-8")
-EA_June$READ.DATE <- as.Date(EA_June$READ.DATE, format = "%d %B %Y")
+EA_July <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/EA-jul-2024-usage.csv",encoding ="UTF-8")
+EA_July$READ.DATE <- as.Date(EA_July$READ.DATE, format = "%d %B %Y")
 
 #############
 
-df_both <- cbind(EA_June,tsla)
+df_both <- cbind(EA_July,tsla)
 ###################               
 
 
@@ -64,7 +64,7 @@ df_both <- cbind(EA_June,tsla)
 # Create a bar chart
 ggplot(df_both, aes(x = Date.time, y = CONSUMPTION.KWH.)) +
   geom_bar(stat = "identity", fill = "steelblue") +
-  labs(title = "Daily Consumption in June 2024", x = "Date", y = "Consumption (kWh)") +
+  labs(title = "Daily Consumption in July 2024", x = "Date", y = "Consumption (kWh)") +
   theme_minimal()
 
 
@@ -81,7 +81,7 @@ df_long <- df_both %>%
 # Create the bar chart
 ggplot(df_long, aes(x = Date.time, y = Value, fill = Variable)) +
   geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Comparison of Daily Consumption and Tsla usage in June",
+  labs(title = "Comparison of Daily Consumption and Tsla usage in July",
        x = "Date", y = "Value (kWh)") +
   scale_fill_manual(values = c("steelblue", "darkorange")) +
   theme_minimal()
