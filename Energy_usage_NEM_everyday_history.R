@@ -75,10 +75,14 @@ file_paths <- c(file_path_1, file_path_2)
 grouped_data <- group_rows_from_files(file_paths, column_index = 4, group_values = c("E1", "B1"))
 
 # Access specific groups
-group_E1 <- grouped_data[["E1"]]
-group_B1 <- grouped_data[["B1"]]
+group_E1 <- grouped_data[["E1"]] # usage from grid
+group_B1 <- grouped_data[["B1"]] # solar generation
 
 
-#
+# Filter only with 300
+filtered_group_E1 <- group_E1 %>% filter(V1 == 300)
+filtered_group_B1 <- group_B1 %>% filter(V1 == 300)
 
+
+# column as time 
 
