@@ -84,5 +84,6 @@ filtered_group_E1 <- group_E1 %>% filter(V1 == 300)
 filtered_group_B1 <- group_B1 %>% filter(V1 == 300)
 
 
-# column as time 
+# change col name
+col_names_1 <- as.data.frame(colnames(filtered_group_E1))
 
