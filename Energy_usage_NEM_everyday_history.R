@@ -1,5 +1,7 @@
 # Get data NEM 
 # plot across usage
+
+
 #library set up
 library(tidyverse)
 library(readxl)
@@ -86,4 +88,19 @@ filtered_group_B1 <- group_B1 %>% filter(V1 == 300)
 
 # change col name
 col_names_1 <- as.data.frame(colnames(filtered_group_E1))
+
+new_colnames <- read.csv("C:/Project_R/Tesla_battery/Tesla_battery/Colname_directory.csv")
+
+# Ensure the second column of new_colnames is used
+if (ncol(new_colnames) >= 2) {
+  # Assign the second column as the new column names of filtered_group_E1 & B1
+  colnames(filtered_group_E1) <- new_colnames[[2]]
+  colnames(filtered_group_B1) <- new_colnames[[2]]
+} else {
+  stop("The 'new_colnames' dataset does not have at least two columns.")
+}
+
+# Verify the updated column names
+# print(colnames(filtered_group_E1))
+
 
