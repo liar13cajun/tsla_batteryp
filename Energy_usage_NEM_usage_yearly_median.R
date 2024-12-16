@@ -68,8 +68,8 @@ filtered_group_B1$date <- as.Date(as.character(filtered_group_B1$date), format =
 
 ########################################################
 
-month_d <- 6
-year_y <- 2023
+# month_d <- 6
+year_y <- 2024
 
 # duck curve significant 
 
@@ -77,7 +77,7 @@ year_y <- 2023
 ################################################
 # Filter data for March and clean the data
 df_usage_day <- filtered_group_E1 %>%
-  filter(month(date) == month_d & year(date) == year_y) %>%
+  filter( year(date) == year_y) %>%
   select(-date, -NEM_code, -DataQualifyFlag) %>%  # Exclude these columns
   gather(key = "time_slot", value = "usage_value") %>%
   mutate(usage_value = as.numeric(usage_value))  # Ensure usage_value is numeric
@@ -119,44 +119,44 @@ ggplot(df_median_usage, aes(x = time_slot_numeric, y = median_usage)) +
   )
 
 #####
-# 
-# # Plot the mean usage values across time slots
-# ggplot(df_avg_usage, aes(x = time_slot_numeric, y = avg_usage)) +
-#   geom_line(color = "blue", size = 1) +
-#   labs(
-#     title = paste0("Mean Usage from Grid Across Time Slots  month ",month_d , "   year  ", year_y),
-#     x = "Time Slot",
-#     y = "Mean Usage Value (kWh)"
-#   ) +
-#   theme_minimal() +
-#   theme(
-#     axis.text.x = element_text(angle = 90, hjust = 1, size = 10),  # Rotate x-axis labels for better readability
-#     panel.grid.minor = element_blank()
-#   ) +
-#   scale_x_continuous(
-#     breaks = seq(0, max(df_avg_usage$time_slot_numeric), by = 30),  # Show every 30th minute (or adjust as needed)
-#     labels = function(x) sprintf("%02d:%02d", floor(x / 60), x %% 60)  # Format time in HH:MM
-#   )
 
-# 
-# # lets do box plot 
-# # Create a box plot for usage values across time slots
-# ggplot(df_usage_day, aes(x = as.factor(time_slot_numeric), y = usage_value)) +
-#   geom_boxplot(outlier.color = "red", fill = "lightblue") +
-#   labs(
-#     title = paste0("Distribution of Usage from Grid Across Time Slots (Month ", month_d, ", Year ", year_y, ")"),
-#     x = "Time Slot (HH:MM)",
-#     y = "Usage Value (kWh)"
-#   ) +
-#   theme_minimal() +
-#   theme(
-#     axis.text.x = element_text(angle = 90, hjust = 1, size = 8),  # Rotate x-axis labels for better readability
-#     panel.grid.minor = element_blank()
-#   ) +
-#   scale_x_discrete(
-#     labels = function(x) sprintf("%02d:%02d", floor(as.numeric(x) / 60), as.numeric(x) %% 60),  # Format time in HH:MM
-#     breaks = seq(0, max(df_avg_usage$time_slot_numeric), by = 30),  # Show every 30th minute (or adjust as needed)
-#   )
+# Plot the mean usage values across time slots
+ggplot(df_avg_usage, aes(x = time_slot_numeric, y = avg_usage)) +
+  geom_line(color = "blue", size = 1) +
+  labs(
+    title = paste0("Mean Usage from Grid Across Time Slots  month  year  ", year_y),
+    x = "Time Slot",
+    y = "Mean Usage Value (kWh)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, size = 10),  # Rotate x-axis labels for better readability
+    panel.grid.minor = element_blank()
+  ) +
+  scale_x_continuous(
+    breaks = seq(0, max(df_avg_usage$time_slot_numeric), by = 30),  # Show every 30th minute (or adjust as needed)
+    labels = function(x) sprintf("%02d:%02d", floor(x / 60), x %% 60)  # Format time in HH:MM
+  )
+
+
+# lets do box plot
+# Create a box plot for usage values across time slots
+ggplot(df_usage_day, aes(x = as.factor(time_slot_numeric), y = usage_value)) +
+  geom_boxplot(outlier.color = "red", fill = "lightblue") +
+  labs(
+    title = paste0("Distribution of Usage from Grid Across Time Slots Year ", year_y, ")"),
+    x = "Time Slot (HH:MM)",
+    y = "Usage Value (kWh)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, size = 8),  # Rotate x-axis labels for better readability
+    panel.grid.minor = element_blank()
+  ) +
+  scale_x_discrete(
+    labels = function(x) sprintf("%02d:%02d", floor(as.numeric(x) / 60), as.numeric(x) %% 60),  # Format time in HH:MM
+    breaks = seq(0, max(df_avg_usage$time_slot_numeric), by = 30),  # Show every 30th minute (or adjust as needed)
+  )
 
 ######
 
@@ -164,7 +164,7 @@ ggplot(df_median_usage, aes(x = time_slot_numeric, y = median_usage)) +
 ggplot(df_usage_day, aes(x = as.factor(time_slot_numeric), y = usage_value)) +
   geom_boxplot(outlier.shape = NA, fill = "lightblue") +
   labs(
-    title = paste0("Distribution of Usage from Grid Across Time Slots (Month ", month_d, ", Year ", year_y, ")"),
+    title = paste0("Distribution of Usage from Grid Across Time Slots ( Year ", year_y, ")"),
     x = "Time Slot (HH:MM)",
     y = "Usage Value (kWh)"
   ) +
@@ -177,4 +177,4 @@ ggplot(df_usage_day, aes(x = as.factor(time_slot_numeric), y = usage_value)) +
     labels = function(x) sprintf("%02d:%02d", floor(as.numeric(x) / 60), as.numeric(x) %% 60),
     breaks = seq(0, max(df_avg_usage$time_slot_numeric), by = 30),  # Show every 30th minute (or adjust as needed)
   ) 
-  #ylim(0, 0.35)  # Set Y-axis limits
+#ylim(0, 0.35)  # Set Y-axis limits
