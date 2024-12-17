@@ -45,7 +45,7 @@ file_paths <- c(
 # Group data
 grouped_data <- group_rows_from_files(file_paths, column_index = 4, group_values = c("E1", "B1"))
 
-group_E1 <- grouped_data[["E1"]]  # Usage from grid
+group_E1 <- grouped_data[["E1"]]  # solar from grid
 group_B1 <- grouped_data[["B1"]]  # Solar generation
 
 # Filter rows and clean column names
@@ -69,8 +69,7 @@ filtered_group_B1$date <- as.Date(as.character(filtered_group_B1$date), format =
 
 ########################################################
 
-month_d <- 6
-year_y <- 2023
+year_y <- 2024
 
 # duck curve significant 
 # summer Dec Jan Feb
@@ -95,50 +94,50 @@ for (group_name in names(month_groups)) {
   months <- month_groups[[group_name]]
   
   # Filter and clean the data
-  df_usage_day <- filtered_group_E1 %>%
+  df_solar_day <- filtered_group_B1 %>%
     filter(month(date) %in% months & year(date) == year_y) %>%
     select(-date, -NEM_code, -DataQualifyFlag) %>%
-    gather(key = "time_slot", value = "usage_value") %>%
-    mutate(usage_value = as.numeric(usage_value))  # Ensure usage_value is numeric
+    gather(key = "time_slot", value = "solar_value") %>%
+    mutate(solar_value = as.numeric(solar_value))  # Ensure solar_value is numeric
   
   # Convert time_slot to time object and numeric for sorting
-  df_usage_day <- df_usage_day %>%
+  df_solar_day <- df_solar_day %>%
     mutate(
       time_slot = hm(time_slot),  # Convert to time object in HH:MM format
       time_slot_numeric = as.numeric(time_slot) / 60  # Convert to total minutes
     )
   
-  # Calculate the median usage value for each time slot across all days
-  df_median_usage <- df_usage_day %>%
+  # Calculate the median solar value for each time slot across all days
+  df_median_solar <- df_solar_day %>%
     group_by(time_slot_numeric) %>%
-    summarise(median_usage = median(usage_value, na.rm = TRUE))
+    summarise(median_solar = median(solar_value, na.rm = TRUE))
   
-  # Calculate the median usage value for each time slot across all days
-  df_avg_usage <- df_usage_day %>%
+  # Calculate the median solar value for each time slot across all days
+  df_avg_solar <- df_solar_day %>%
     group_by(time_slot_numeric) %>%
-    summarise(avg_usage = mean(usage_value, na.rm = TRUE))  # Calculate the median usage for each time slot
+    summarise(avg_solar = mean(solar_value, na.rm = TRUE))  # Calculate the median solar for each time slot
   
-  # Plot the median usage values across time slots
-  p <- ggplot(df_median_usage, aes(x = time_slot_numeric, y = median_usage)) +
-    geom_line(color = "blue", size = 1) +
+  # Create a box plot
+  p <- ggplot(df_solar_day, aes(x = as.factor(time_slot_numeric), y = solar_value)) +
+    geom_boxplot(outlier.shape = NA, fill = "lightblue") +
     labs(
-      title = paste0("Median Usage from Grid Across Time Slots (", group_name, " Year ", year_y, ")"),
-      x = "Time Slot",
-      y = "Median Usage Value (kWh)"
+      title = paste0("solar from Grid Across Time Slots (", group_name, " Year ", year_y, ")"),
+      x = "Time Slot (HH:MM)",
+      y = "solar Value (kWh)"
     ) +
     theme_minimal() +
     theme(
-      axis.text.x = element_text(angle = 90, hjust = 1, size = 10),
+      axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
       panel.grid.minor = element_blank()
     ) +
-    scale_x_continuous(
-      breaks = seq(0, max(df_median_usage$time_slot_numeric), by = 30),
-      labels = function(x) sprintf("%02d:%02d", floor(x / 60), x %% 60)
-    )
+    scale_x_discrete(
+      labels = function(x) sprintf("%02d:%02d", floor(as.numeric(x) / 60), as.numeric(x) %% 60),
+      breaks = seq(0, max(df_avg_solar$time_slot_numeric), by = 30),  # Show every 30th minute (or adjust as needed)
+    ) 
   
   # Add the plot to the list
   plots[[group_name]] <- p
 }
 
-# Display the plots in a grid (2 rows, 2 columns)
+# Combine and display the plots using gridExtra
 grid.arrange(grobs = plots, nrow = 2, ncol = 2)

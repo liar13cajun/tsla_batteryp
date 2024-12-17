@@ -112,6 +112,11 @@ for (group_name in names(month_groups)) {
     group_by(time_slot_numeric) %>%
     summarise(median_usage = median(usage_value, na.rm = TRUE))
   
+  # Calculate the median usage value for each time slot across all days
+  df_avg_usage <- df_usage_day %>%
+    group_by(time_slot_numeric) %>%
+    summarise(avg_usage = mean(usage_value, na.rm = TRUE))  # Calculate the median usage for each time slot
+  
   # Create a box plot
   p <- ggplot(df_usage_day, aes(x = as.factor(time_slot_numeric), y = usage_value)) +
     geom_boxplot(outlier.shape = NA, fill = "lightblue") +
