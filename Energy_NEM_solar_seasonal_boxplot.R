@@ -100,6 +100,8 @@ for (group_name in names(month_groups)) {
     gather(key = "time_slot", value = "solar_value") %>%
     mutate(solar_value = as.numeric(solar_value))  # Ensure solar_value is numeric
   
+  df_solar_day$solar_value <- df_solar_day$solar_value * -1 #(flip the graph)
+  
   # Convert time_slot to time object and numeric for sorting
   df_solar_day <- df_solar_day %>%
     mutate(
@@ -121,7 +123,7 @@ for (group_name in names(month_groups)) {
   p <- ggplot(df_solar_day, aes(x = as.factor(time_slot_numeric), y = solar_value)) +
     geom_boxplot(outlier.shape = NA, fill = "lightblue") +
     labs(
-      title = paste0("solar from Grid Across Time Slots (", group_name, " Year ", year_y, ")"),
+      title = paste0("Solar export to Grid Across Time Slots (", group_name, " Year ", year_y, ")"),
       x = "Time Slot (HH:MM)",
       y = "solar Value (kWh)"
     ) +
@@ -141,3 +143,5 @@ for (group_name in names(month_groups)) {
 
 # Combine and display the plots using gridExtra
 grid.arrange(grobs = plots, nrow = 2, ncol = 2)
+
+
