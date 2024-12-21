@@ -143,5 +143,3 @@ for (group_name in names(month_groups)) {
 
 # Combine and display the plots using gridExtra
 grid.arrange(grobs = plots, nrow = 2, ncol = 2)
-
-
