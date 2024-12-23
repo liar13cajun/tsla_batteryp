@@ -55,3 +55,24 @@ for (month in months) {
 
 # Print the monthly summary
 print(monthly_summary)
+
+
+# average of stuff 
+# energy Australia 
+# peak rate 0.55 / kwh
+# shoulder 0.2061620 / kwh
+# off peak 0.33 / kwh
+
+# solar feed in 0.045 kwh
+
+peak_rate <- 0.55
+shoulder_rate <- 0.2061620
+off_peak_rate <- 0.33
+solar_feed_in_rate <- 0.045
+
+summary(monthly_summary$battery_energy_fm_solar)
+
+tesla_battery_solar_saving <- sum(monthly_summary$battery_energy_fm_solar) * peak_rate / 1000
+tesla_battery_solar_saving
+
+
