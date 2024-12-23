@@ -68,8 +68,8 @@ filtered_group_B1$date <- as.Date(as.character(filtered_group_B1$date), format =
 
 ########################################################
 
-month_d <- 6
-year_y <- 2023
+month_d <- 11
+year_y <- 2024
 
 # duck curve significant 
 
