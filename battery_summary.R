@@ -9,7 +9,6 @@ year <- "2024"
 # Create an empty data frame to store the results
 monthly_summary <- data.frame(
   Month = character(),
- 
   battery_energy_fm_grid = numeric(),
   battery_energy_fm_solar = numeric(),
   usage_fm_battery = numeric(),
@@ -19,7 +18,7 @@ monthly_summary <- data.frame(
   stringsAsFactors = FALSE
 )
 
-# Loop through each month
+# Loop through each month to load data and calculate totals
 for (month in months) {
   # Format month to two digits
   month_str <- sprintf("%02d", month)
@@ -29,13 +28,12 @@ for (month in months) {
   df_energy <- read.csv(file_path)
   
   # Calculate the total values for each metric
- 
   battery_energy_fm_grid <- sum(df_energy$battery_energy_imported_from_grid, na.rm = TRUE)
   battery_energy_fm_solar <- sum(df_energy$battery_energy_imported_from_solar, na.rm= TRUE)
-  usage_fm_battery <- sum(df_energy$consumer_energy_imported_from_battery,na.rm=TRUE)
-  usage_fm_solar <- sum(df_energy$consumer_energy_imported_from_solar,na.rm=TRUE)
-  solar_to_grid <- sum(df_energy$grid_energy_exported_from_solar,na.rm=TRUE)
-  solar_generation <- sum(df_energy$total_solar_generation,na.rm=TRUE)
+  usage_fm_battery <- sum(df_energy$consumer_energy_imported_from_battery, na.rm=TRUE)
+  usage_fm_solar <- sum(df_energy$consumer_energy_imported_from_solar, na.rm=TRUE)
+  solar_to_grid <- sum(df_energy$grid_energy_exported_from_solar, na.rm=TRUE)
+  solar_generation <- sum(df_energy$total_solar_generation, na.rm=TRUE)
   
   # Append the results to the summary data frame
   monthly_summary <- rbind(
@@ -45,7 +43,6 @@ for (month in months) {
       usage_fm_battery = usage_fm_battery,
       battery_energy_fm_grid = battery_energy_fm_grid,
       battery_energy_fm_solar = battery_energy_fm_solar,
-    
       usage_fm_solar = usage_fm_solar,
       solar_to_grid = solar_to_grid,
       solar_generation = solar_generation
@@ -53,30 +50,29 @@ for (month in months) {
   )
 }
 
-#
+# Print the monthly summary data
 print(monthly_summary)
 
 #########################################
-# average of stuff 
-# energy Australia 
-# peak rate 0.55 / kwh
-# shoulder 0.2061620 / kwh
-# off peak 0.33 / kwh
+# Define cost rates for energy and solar feed-in
+peak_rate <- 0.55         # Peak rate (in $/kWh)
+shoulder_rate <- 0.2061620 # Shoulder rate (in $/kWh)
+off_peak_rate <- 0.33     # Off-peak rate (in $/kWh)
+solar_feed_in_rate <- 0.045 # Solar feed-in rate (in $/kWh)
 
-# solar feed in 0.045 kwh
-
-peak_rate <- 0.55
-shoulder_rate <- 0.2061620
-off_peak_rate <- 0.33
-solar_feed_in_rate <- 0.045
-
-summary(monthly_summary$battery_energy_fm_solar)
-
+# Calculate savings from solar battery usage
 tesla_battery_solar_saving <- sum(monthly_summary$battery_energy_fm_solar) * peak_rate / 1000
-tesla_battery_solar_saving
+print(tesla_battery_solar_saving)
 
-tesla_battery_solar_saving / 9
+# Calculate the saving per months (assuming 9 months)
+tesla_battery_solar_saving_per_months <- tesla_battery_solar_saving / 9
+print(tesla_battery_solar_saving_per_month)
 
+# Calculate time-of-use savings (based on grid energy usage and average rate)
+average_rate <- mean(c(shoulder_rate, off_peak_rate)) # Calculate average of shoulder and off-peak rates
+time_of_use_saving <- sum(monthly_summary$battery_energy_fm_grid) * (peak_rate - average_rate) / 1000
+print(time_of_use_saving)
 
-time_of_use_saving <- sum(monthly_summary$battery_energy_fm_grid) * (peak_rate - mean(shoulder_rate,off_peak_rate))/1000
-time_of_use_saving / 7
+# Calculate the saving per months (assuming 7 months)
+time_of_use_saving_per_month <- time_of_use_saving / 7
+print(time_of_use_saving_per_month)

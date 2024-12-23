@@ -166,4 +166,4 @@ print(paste("Total solar export :", total_solar_export, "kWh"))
 
 # solar feed in
 solar_feed_in_rate <- 0.045
-total_solar_export*solar_feed_in_rate /11
+total_solar_export*solar_feed_in_rate /11 # each month 
