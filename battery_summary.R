@@ -85,4 +85,4 @@ tesla_battery_solar_saving / 9
 # total_solar_generation
 
 time_of_use_saving <- sum(monthly_summary$battery_energy_fm_grid) * (peak_rate - mean(shoulder_rate,off_peak_rate))/1000
-time_of_use_saving / 9
+time_of_use_saving / 7
