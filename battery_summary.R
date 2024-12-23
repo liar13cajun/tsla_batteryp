@@ -75,4 +75,14 @@ summary(monthly_summary$battery_energy_fm_solar)
 tesla_battery_solar_saving <- sum(monthly_summary$battery_energy_fm_solar) * peak_rate / 1000
 tesla_battery_solar_saving
 
+tesla_battery_solar_saving / 9
 
+# tesla_battery_solar_saving
+# total_solar_to_grid <- sum(monthly_summary$solar_to_grid)
+# total_solar_to_grid
+# 
+# total_solar_generation <- sum(monthly_summary$solar_generation)
+# total_solar_generation
+
+time_of_use_saving <- sum(monthly_summary$battery_energy_fm_grid) * (peak_rate - mean(shoulder_rate,off_peak_rate))/1000
+time_of_use_saving / 9

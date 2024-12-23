@@ -54,3 +54,28 @@ ggplot(df_energy, aes(x = time, y = battery_energy_imported_from_solar)) +
        y = "Battery Energy Imported (kWh)") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+###############################
+
+# Sum the total solar energy exported (in kWh)
+total_solar_exported <- sum(df_energy$grid_energy_exported_from_solar, na.rm = TRUE) / 1000 +sum(df_energy$grid_energy_exported_from_battery) /1000
+total_grid_export <- sum(df_energy$total_grid_energy_exported,na.rm = TRUE)/1000
+total_solar_exported
+
+# Summarize solar energy exported by date
+daily_export_summary <- df_energy %>%
+  group_by(date) %>%
+  summarise(total_exported = sum(grid_energy_exported_from_solar, na.rm = TRUE))
+
+# Plot daily bar chart for solar energy exported
+ggplot(daily_export_summary, aes(x = date, y = total_exported)) +
+  geom_bar(stat = "identity", fill = "orange") +
+  labs(title = "Daily Solar Energy Exported",
+       x = "Date",
+       y = "Energy Exported (kWh)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+

@@ -143,3 +143,27 @@ for (group_name in names(month_groups)) {
 
 # Combine and display the plots using gridExtra
 grid.arrange(grobs = plots, nrow = 2, ncol = 2)
+
+
+############################################################
+
+# Define the months for calculation
+months_to_sum <- 1:11
+
+# Filter and clean the data for March to November
+df_solar_sum <- filtered_group_B1 %>%
+  filter(month(date) %in% months_to_sum & year(date) == year_y) %>%
+  select(-date, -NEM_code, -DataQualifyFlag)  # Exclude unnecessary columns
+
+# Convert columns to numeric (if not already)
+df_solar_sum[, 3:ncol(df_solar_sum)] <- lapply(df_solar_sum[, 3:ncol(df_solar_sum)], as.numeric)
+
+# Calculate the total solar export
+total_solar_export <- sum(df_solar_sum[, 3:ncol(df_solar_sum)], na.rm = TRUE)
+
+# Display the result
+print(paste("Total solar export :", total_solar_export, "kWh"))
+
+# solar feed in
+solar_feed_in_rate <- 0.045
+total_solar_export*solar_feed_in_rate /11
