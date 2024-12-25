@@ -66,7 +66,7 @@ print(tesla_battery_solar_saving)
 
 # Calculate the saving per months (assuming 9 months)
 tesla_battery_solar_saving_per_months <- tesla_battery_solar_saving / 9
-print(tesla_battery_solar_saving_per_month)
+print(tesla_battery_solar_saving_per_months)
 
 # Calculate time-of-use savings (based on grid energy usage and average rate)
 average_rate <- mean(c(shoulder_rate, off_peak_rate)) # Calculate average of shoulder and off-peak rates
