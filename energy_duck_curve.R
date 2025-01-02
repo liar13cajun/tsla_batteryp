@@ -178,3 +178,131 @@ ggplot(df_usage_day, aes(x = as.factor(time_slot_numeric), y = usage_value)) +
     breaks = seq(0, max(df_avg_usage$time_slot_numeric), by = 30),  # Show every 30th minute (or adjust as needed)
   ) 
 #ylim(0, 0.35)  # Set Y-axis limits
+
+# Filter data for the selected year and clean the data for filtered_group_B1
+df_solar_day <- filtered_group_B1 %>%
+  filter(year(date) == year_y) %>%
+  select(-date, -NEM_code, -DataQualifyFlag) %>%  # Exclude these columns
+  gather(key = "time_slot", value = "solar_value") %>%
+  mutate(solar_value = as.numeric(solar_value))  # Ensure solar_value is numeric
+
+# Convert time_slot to a time object using hm()
+df_solar_day <- df_solar_day %>%
+  mutate(time_slot = hm(time_slot))  # Convert to time object in HH:MM format
+
+# If you need numeric time for sorting, convert time object to total minutes
+df_solar_day <- df_solar_day %>%
+  mutate(time_slot_numeric = as.numeric(time_slot) / 60)  # Convert to total minutes
+
+# Calculate the median solar value for each time slot across all days
+df_median_solar <- df_solar_day %>%
+  group_by(time_slot_numeric) %>%
+  summarise(median_solar = median(solar_value, na.rm = TRUE))  # Calculate the median solar for each time slot
+
+# Calculate the mean solar value for each time slot across all days
+df_avg_solar <- df_solar_day %>%
+  group_by(time_slot_numeric) %>%
+  summarise(avg_solar = mean(solar_value, na.rm = TRUE))  # Calculate the mean solar for each time slot
+
+# Plot the median solar values across time slots
+ggplot(df_median_solar, aes(x = time_slot_numeric, y = median_solar)) +
+  geom_line(color = "green", size = 1) +
+  labs(
+    title = paste0("Median Solar Generation Across Time Slots (Month ", month_d, ", Year ", year_y, ")"),
+    x = "Time Slot",
+    y = "Median Solar Value (kWh)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, size = 10),
+    panel.grid.minor = element_blank()
+  ) +
+  scale_x_continuous(
+    breaks = seq(0, max(df_median_solar$time_slot_numeric), by = 30),
+    labels = function(x) sprintf("%02d:%02d", floor(x / 60), x %% 60)
+  )
+
+# Plot the mean solar values across time slots
+ggplot(df_avg_solar, aes(x = time_slot_numeric, y = avg_solar)) +
+  geom_line(color = "green", size = 1) +
+  labs(
+    title = paste0("Mean Solar Generation Across Time Slots (Month ", month_d, ", Year ", year_y, ")"),
+    x = "Time Slot",
+    y = "Mean Solar Value (kWh)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, size = 10),
+    panel.grid.minor = element_blank()
+  ) +
+  scale_x_continuous(
+    breaks = seq(0, max(df_avg_solar$time_slot_numeric), by = 30),
+    labels = function(x) sprintf("%02d:%02d", floor(x / 60), x %% 60)
+  )
+
+# Create a box plot for solar values across time slots
+ggplot(df_solar_day, aes(x = as.factor(time_slot_numeric), y = solar_value)) +
+  geom_boxplot(outlier.color = "red", fill = "lightgreen") +
+  labs(
+    title = paste0("Distribution of Solar Generation Across Time Slots (Year ", year_y, ")"),
+    x = "Time Slot (HH:MM)",
+    y = "Solar Value (kWh)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
+    panel.grid.minor = element_blank()
+  ) +
+  scale_x_discrete(
+    labels = function(x) sprintf("%02d:%02d", floor(as.numeric(x) / 60), as.numeric(x) %% 60),
+    breaks = seq(0, max(df_avg_solar$time_slot_numeric), by = 30)
+  )
+
+# Suppress outliers in the box plot
+ggplot(df_solar_day, aes(x = as.factor(time_slot_numeric), y = solar_value)) +
+  geom_boxplot(outlier.shape = NA, fill = "lightgreen") +
+  labs(
+    title = paste0("Distribution of Solar Generation Across Time Slots (Year ", year_y, ")"),
+    x = "Time Slot (HH:MM)",
+    y = "Solar Value (kWh)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
+    panel.grid.minor = element_blank()
+  ) +
+  scale_x_discrete(
+    labels = function(x) sprintf("%02d:%02d", floor(as.numeric(x) / 60), as.numeric(x) %% 60),
+    breaks = seq(0, max(df_avg_solar$time_slot_numeric), by = 30)
+  )
+
+# Adjust solar values to be negative
+df_solar_day <- df_solar_day %>%
+  mutate(solar_value = -solar_value)
+
+# Combine grid usage and solar generation datasets
+combined_data <- bind_rows(
+  df_usage_day %>% rename(value = usage_value) %>% mutate(type = "Grid Usage"),
+  df_solar_day %>% rename(value = solar_value) %>% mutate(type = "Solar Generation")
+)
+
+# Create a combined box plot
+ggplot(combined_data, aes(x = as.factor(time_slot_numeric), y = value, fill = type)) +
+  geom_boxplot(outlier.shape = NA) +
+  scale_fill_manual(values = c("lightblue", "lightgreen")) +
+  labs(
+    title = paste0("Combined Distribution of Grid Usage and Solar Generation (Year ", year_y, ")"),
+    x = "Time Slot (HH:MM)",
+    y = "Value (kWh)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
+    panel.grid.minor = element_blank()
+  ) +
+  scale_x_discrete(
+    labels = function(x) sprintf("%02d:%02d", floor(as.numeric(x) / 60), as.numeric(x) %% 60),
+    breaks = seq(0, max(combined_data$time_slot_numeric), by = 30)
+  ) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black")
+
